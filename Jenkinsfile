@@ -10,7 +10,7 @@ pipeline {
         stage('create-docker-image') {
             steps {
                 sh '''
-                docker build -t devopstechlab/tomcatstar:${BUILD_NUMBER}
+                docker build -t devopstechlab/tomcatstar:${BUILD_NUMBER} .
                 docker tag devopstechlab/tomcatstar:${BUILD_NUMBER} devopstechlab/tomcatstar:latest
                 docker push devopstechlab/tomcatstar:${BUILD_NUMBER}
                 docker push devopstechlab/tomcatstar:latest
