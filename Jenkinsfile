@@ -1,9 +1,5 @@
 pipeline {
     agent any
-    tools {
-        maven 'maven3' 
-        jdk 'java17'
-    }
     stages {
         stage('git-code-download') {
             steps {
@@ -11,22 +7,14 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/devopstechlab/maven-devopsstar.git'
             }
         }
-        stage('Build') {
+        stage('create-docker-image') {
             steps {
-                echo "Doing Build"
-                sh 'mvn clean package'
-            }
-        }
-        stage('archive-artifacts') {
-            steps {
-                echo "Archiving the artifacts"
-                archiveArtifacts artifacts: '**/*.war', followSymlinks: false
-            }
-        }
-        stage('build-other-project') {
-            steps {
-                echo "Build other project which is deploy to dev"
-                build wait: false, job: 'deploy-to-dev-pipeline'
+                sh '''
+                docker build -t devopstechlab/tomcatstar:${BUILD_NUMBER}
+                docker tag devopstechlab/tomcatstar:${BUILD_NUMBER} devopstechlab/tomcatstar:latest
+                docker push devopstechlab/tomcatstar:${BUILD_NUMBER}
+                docker push devopstechlab/tomcatstar:latest
+                '''
             }
         }
     }
